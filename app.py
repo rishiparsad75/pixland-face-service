@@ -28,7 +28,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 MODEL_NAME = "ArcFace"
-DETECTOR = "retinaface"    # More accurate than opencv
+DETECTOR = "opencv"        # Faster/Lighter for B1 plan
 DISTANCE_METRIC = "cosine" # ArcFace + cosine = best combo
 
 
@@ -136,8 +136,12 @@ def extract():
         return jsonify({"error": str(e)}), 400
 
     except Exception as e:
-        logger.error(f"[Extract] Error: {e}")
-        return jsonify({"error": str(e)}), 500
+        logger.error(f"[Extract] Error: {str(e)}")
+        # Return error details to help debug 500s
+        return jsonify({
+            "error": "SERVER_ERROR",
+            "message": str(e)
+        }), 500
 
 
 @app.route("/compare", methods=["POST"])
