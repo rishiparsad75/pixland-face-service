@@ -195,6 +195,17 @@ def compare():
         return jsonify({"error": str(e)}), 500
 
 
+
+@app.route("/health", methods=["GET"])
+def health():
+    """Simple health check endpoint."""
+    return jsonify({
+        "status": "online",
+        "model": MODEL_NAME,
+        "detector": DETECTOR
+    })
+
+
 if __name__ == "__main__":
     # Azure App Service sets the PORT environment variable
     port = int(os.environ.get("PORT", 5001))
