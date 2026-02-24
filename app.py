@@ -60,10 +60,6 @@ def pil_to_numpy(pil_img):
     return np.array(pil_img)
 
 
-@app.route("/health", methods=["GET"])
-def health():
-    return jsonify({"status": "ok", "model": MODEL_NAME, "detector": DETECTOR})
-
 
 @app.route("/extract", methods=["POST"])
 def extract():
