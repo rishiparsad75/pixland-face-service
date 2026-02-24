@@ -200,6 +200,12 @@ def compare():
 
 
 
+@app.route("/", methods=["GET"])
+def index():
+    """Root endpoint for Azure warmup probes."""
+    return jsonify({"message": "PixLand Face Service is running", "warmup": True})
+
+
 @app.route("/health", methods=["GET"])
 def health():
     """Simple health check endpoint."""
@@ -212,7 +218,8 @@ def health():
 
 if __name__ == "__main__":
     # Azure App Service sets the PORT environment variable
-    port = int(os.environ.get("PORT", 5001))
+    # Using 8080 as a more standard default for Azure
+    port = int(os.environ.get("PORT", 8080))
     logger.info(f"[Startup] PixLand Face Service starting on port {port}")
     logger.info(f"[Startup] Model: {MODEL_NAME}, Detector: {DETECTOR}")
     app.run(host="0.0.0.0", port=port, debug=False)
