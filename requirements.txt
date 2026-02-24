@@ -1,0 +1,8 @@
+flask
+deepface
+tf-keras
+opencv-python-headless
+numpy==1.26.4
+gunicorn
+requests
+Pillow
