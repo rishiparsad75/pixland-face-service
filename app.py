@@ -1,19 +1,5 @@
-"""
-PixLand Face Recognition Microservice
-======================================
-Uses DeepFace (ArcFace model) for production-grade face recognition.
-ArcFace produces 512-dimensional L2-normalized embeddings.
-
-Endpoints:
-  POST /extract   — Extract face embedding from uploaded image
-  POST /compare   — Compare two embeddings or two images
-  GET  /health    — Health check
-"""
-
 import os
 import sys
-import base64
-import io
 import logging
 
 # Force unbuffered output for Azure logs
@@ -21,7 +7,7 @@ def log_ready(msg):
     print(f">>> PIXLAND LITE: {msg}")
     sys.stdout.flush()
 
-log_ready("Script Entry reached")
+log_ready("Script Entry reached (Ultra-Light)")
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -53,6 +39,8 @@ def load_deepface():
 
 def decode_image(data):
     """Decode a base64 image string or raw bytes into a PIL Image."""
+    import base64
+    import io
     from PIL import Image
     if isinstance(data, str):
         # Strip data URI prefix if present
