@@ -10,21 +10,25 @@ Endpoints:
   GET  /health    — Health check
 """
 
-print(">>> PIXLAND STARTUP: Script Entry reached")
-
 import os
+import sys
 import base64
 import io
 import logging
 import numpy as np
 
-print(">>> PIXLAND STARTUP: Basic imports done")
+# Force unbuffered output for Azure logs
+def log_ready(msg):
+    print(f">>> PIXLAND STARTUP: {msg}")
+    sys.stdout.flush()
+
+log_ready("Script Entry reached")
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from PIL import Image as PILImage
 
-print(">>> PIXLAND STARTUP: Flask/PIL imports done")
+log_ready("Flask/PIL imports done")
 
 # Lazy import DeepFace to speed up startup
 deepface = None
