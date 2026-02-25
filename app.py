@@ -15,23 +15,18 @@ import sys
 import base64
 import io
 import logging
-import numpy as np
 
 # Force unbuffered output for Azure logs
 def log_ready(msg):
-    print(f">>> PIXLAND STARTUP: {msg}")
+    print(f">>> PIXLAND LITE: {msg}")
     sys.stdout.flush()
 
 log_ready("Script Entry reached")
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from PIL import Image as PILImage
 
-log_ready("Flask/PIL imports done")
-
-# Lazy import DeepFace to speed up startup
-deepface = None
+log_ready("Flask/CORS imports done")
 
 app = Flask(__name__)
 CORS(app)  # Allow Node.js backend to call this service
@@ -42,6 +37,8 @@ MODEL_NAME = "ArcFace"
 DETECTOR = "opencv"        # Faster/Lighter for B1 plan
 DISTANCE_METRIC = "cosine" # ArcFace + cosine = best combo
 
+# Global to store DeepFace once loaded
+deepface = None
 
 def load_deepface():
     """Lazy-load DeepFace on first use."""
@@ -50,13 +47,13 @@ def load_deepface():
         logger.info("[Init] Loading DeepFace...")
         from deepface import DeepFace as df
         deepface = df
-        # Warm-up: download model weights if not cached
         logger.info("[Init] DeepFace loaded successfully!")
     return deepface
 
 
 def decode_image(data):
     """Decode a base64 image string or raw bytes into a PIL Image."""
+    from PIL import Image
     if isinstance(data, str):
         # Strip data URI prefix if present
         if "," in data:
@@ -64,10 +61,11 @@ def decode_image(data):
         raw = base64.b64decode(data)
     else:
         raw = data
-    return PILImage.open(io.BytesIO(raw)).convert("RGB")
+    return Image.open(io.BytesIO(raw)).convert("RGB")
 
 
 def pil_to_numpy(pil_img):
+    import numpy as np
     return np.array(pil_img)
 
 
@@ -96,7 +94,8 @@ def extract():
             pil_img = decode_image(image_data)
         elif "image" in request.files:
             file = request.files["image"]
-            pil_img = PILImage.open(file.stream).convert("RGB")
+            from PIL import Image
+            pil_img = Image.open(file.stream).convert("RGB")
         else:
             return jsonify({"error": "No image provided. Send JSON {image: base64} or multipart form."}), 400
 
@@ -173,6 +172,7 @@ def compare():
         if emb1 is None or emb2 is None:
             return jsonify({"error": "Both embedding1 and embedding2 are required"}), 400
 
+        import numpy as np
         e1 = np.array(emb1, dtype=np.float32)
         e2 = np.array(emb2, dtype=np.float32)
 
